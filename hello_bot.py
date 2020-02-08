@@ -5,7 +5,7 @@ from flask import Flask, request
 from translateObj import TranslateObj
 from utils import create_webhook
 from webexteamssdk import WebexTeamsAPI, Webhook
-from googletrans import Translator
+from googletrans import Translator, LANGUAGES
 
 WEBEX_TEAMS_ACCESS_TOKEN = 'MDBjYmQxNmQtMWU5Zi00YTVkLTlmZjMtYjFiMDFhNTJhNmY1YWQ4N2M2NWYtODdh_PF84_4fd62afc-068e-4c49-b7bf-3ef92e2f33f5'
 
@@ -36,13 +36,13 @@ def process_message(data):
         return '200'
 
 def parse_message(command, sender, roomId):
-    if command == "translate":
+    if command == "translation":
         if roomId not in list(translateObjs.keys()):
             create_trans(roomId,sender)
-    if command == "start translation":
+    if command == "start":
         if translateObjs[roomId]:
             start_translate(roomId, sender)
-    if command == "end translation":
+    if command == "show result":
         if translateObjs[roomId]:
             end_translate(roomId, sender)
     if command == "voice":
@@ -322,8 +322,8 @@ def start_translate(roomId, sender):
     if translateObjs[roomId].author == sender:
         if not translateObjs[roomId].started:
             translateObjs[roomId].started = True
-            send_message_in_room(roomId, "Translating " + translateObjs[roomId].get_source_content() + " to " +
-                                 translateObjs[roomId].get_target())
+            send_message_in_room(roomId, "Translating \"" + translateObjs[roomId].get_source_content() + "\" to " +
+                                 LANGUAGES[translateObjs[roomId].get_target()])
         else:
             send_message_in_room(roomId, "Error: translation already started")
     else:
@@ -375,9 +375,9 @@ def process_card_response(data):
         current_poll.votes[int(inputs["poll_choice"])] += 1
     elif 'source_content' in list(inputs.keys()):
         add_translateObj(inputs['source_content'], inputs['target_lang'], inputs['roomId'], teams_api.people.get(data.personId).emails[0])
-        send_message_in_room(inputs['roomId'], "Translating: " + inputs['source_content'] +
-                             " ready to go,\n please send \"start translation\" to start the translation process" +
-                             "and then \"end translation to show the result\"")
+        send_message_in_room(inputs['roomId'], "Translating: \"" + inputs['source_content'] +
+                             "\" is ready to go,\n please type \"start\" to start the translation process, " +
+                             "then \"show result\' to show the result")
         # Translated(src, dest, origin, text, pronunciation, extra_data=None)
     #     create translateObj here:
     return '200'
