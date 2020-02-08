@@ -1,18 +1,19 @@
 class TranslateObj:
-    def __init__(self, source, targetLang, room_id, author):
-        self.source = source
-        self.targetLang = targetLang
+    def __init__(self, sourceLangType, sourceLangText, targetLangType, room_id, author):
+        self.__sourceLangType = sourceLangType
+        self.__source = sourceLangText
+        self.__targetLang = targetLangType
         self.room_id = room_id
         self.author = author
         self.started = False
 
     def get_source_content(self):
-        return self.source
+        return self.__source
 
-    def get_target(self):
-        return self.targetLang
+    def get_targetLang_type(self):
+        return self.__targetLang
 
+    def get_source_type(self):
+        return self.__sourceLangType
 
-    def set_source_content(self, source):
-        self.source = source;
 

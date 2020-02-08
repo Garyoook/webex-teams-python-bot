@@ -13,6 +13,7 @@ teams_api = None
 all_polls = {}
 translateObjs = {}
 translator = Translator()
+source_type = ''
 
 app = Flask(__name__)
 @app.route('/messages_webhook', methods=['POST'])
@@ -109,12 +110,12 @@ def generate_start_translate_card(roomId): # like generate_start_poll_card
             "body": [
                 {
                     "type": "TextBlock",
-                    "text": "Please enter the message to be translated (English):"
+                    "text": "Please enter the message to be translated (in a SINGLE language):"
                 },
                 {
                     "type": "Input.Text",
                     "id": "source_content",
-                    "placeholder": "(English)",
+                    "placeholder": "(in a single language)",
                     "maxLength": 1024
                 },
                 {
@@ -321,8 +322,10 @@ def start_translate(roomId, sender):
     if translateObjs[roomId].author == sender:
         if not translateObjs[roomId].started:
             translateObjs[roomId].started = True
-            send_message_in_room(roomId, "Translating \"" + translateObjs[roomId].get_source_content() + "\" to " +
-                                 LANGUAGES[translateObjs[roomId].get_target()])
+            source_type = translator.detect(translateObjs[roomId].get_source_content()).lang
+            send_message_in_room(roomId, "Translating \"" + translateObjs[roomId].get_source_content()
+                                 + "\"" + "(" + source_type
+                                 + ") to " + LANGUAGES[translateObjs[roomId].get_targetLang_type()])
         else:
             send_message_in_room(roomId, "Error: translation already started")
     else:
@@ -332,8 +335,8 @@ def end_translate(roomId, sender):
     if translateObjs[roomId].author == sender:
         if translateObjs[roomId].started:
             source = translateObjs[roomId].get_source_content()
-            target_lang = translateObjs[roomId].get_target()
-            result = translator.translate(source, translateObjs[roomId].get_target(), 'en').text
+            target_lang_type = translateObjs[roomId].get_targetLang_type()
+            result = translator.translate(source, target_lang_type, 'auto').text
             teams_api.messages.create(roomId=roomId, text="Card Unsupported", attachments=[generate_translate_result_card(roomId, source, result)])
         else:
             send_message_in_room(roomId, "Translation hasn't been started yet")
@@ -373,10 +376,9 @@ def process_card_response(data):
         current_poll = all_polls[inputs['roomId']]
         current_poll.votes[int(inputs["poll_choice"])] += 1
     elif 'source_content' in list(inputs.keys()):
-        add_translateObj(inputs['source_content'], inputs['target_lang'], inputs['roomId'], teams_api.people.get(data.personId).emails[0])
+        add_translateObj('auto', inputs['source_content'], inputs['target_lang'], inputs['roomId'], teams_api.people.get(data.personId).emails[0])
         send_message_in_room(inputs['roomId'], "Translating: \"" + inputs['source_content'] +
-                             "\" is ready to go,\n please type \"start\" to start the translation process, " +
-                             "then \"show result\' to show the result")
+                             "\" is ready to go,\n please type \"start\" to start the translation process and show the result")
         # Translated(src, dest, origin, text, pronunciation, extra_data=None)
     #     create translateObj here:
     return '200'
@@ -386,9 +388,9 @@ def add_poll(poll_name, poll_description, room_id, author):
     poll = Poll(poll_name, poll_description, room_id, author)
     all_polls[room_id] = poll
 
-def add_translateObj(source_content, target_lang, roomId, author):
+def add_translateObj(source_type, source_content, target_lang, roomId, author):
     print(author)
-    translateObj = TranslateObj(source_content, target_lang, roomId, author)
+    translateObj = TranslateObj(source_type, source_content, target_lang, roomId, author)
     translateObjs[roomId] = translateObj
 
 def send_direct_message(person_email, message):
