@@ -42,7 +42,6 @@ def parse_message(command, sender, roomId):
     if command == "start":
         if translateObjs[roomId]:
             start_translate(roomId, sender)
-    if command == "show result":
         if translateObjs[roomId]:
             end_translate(roomId, sender)
     if command == "voice":
