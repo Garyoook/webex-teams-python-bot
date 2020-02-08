@@ -29,6 +29,8 @@ def process_message(data):
         return '200'
 
 def parse_message(command, sender, roomId):
+    if command == "voice":
+        listen(roomId,sender)
     if command == "create poll":
         if roomId not in list(all_polls.keys()):
             create_poll(roomId, sender)
@@ -42,6 +44,9 @@ def parse_message(command, sender, roomId):
         if all_polls[roomId]:
             end_poll(roomId, sender)
     return
+
+def listen(roomId,sender):
+    teams_api.messages.create(toPersonEmail=sender, text="发生啥事？")
 
 def generate_start_poll_card(roomId):
     return {
