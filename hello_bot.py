@@ -18,12 +18,14 @@ def messages_webhook():
 
 def process_message(data):
     if data.personId == teams_api.people.me().id:
+        print (1)
         # Message sent by bot, do not respond
         return '200'
     else:
         message = teams_api.messages.get(data.id).text
         print(message)
-        commands_split = (message.split())[1:]
+        start = 1 if message[0] == '@' else 0
+        commands_split = (message.split())[start:]
         command = ' '.join(commands_split)
         parse_message(command, data.personEmail, data.roomId)
         return '200'
