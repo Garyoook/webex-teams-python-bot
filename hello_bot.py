@@ -38,12 +38,10 @@ def process_message(data):
 
 def parse_message(command, sender, roomId):
     if command == "translation":
-        if roomId not in list(translateObjs.keys()):
             create_trans(roomId,sender)
     if command == "start":
         if translateObjs[roomId]:
             start_translate(roomId, sender)
-        if translateObjs[roomId]:
             end_translate(roomId, sender)
     if command == "voice":
         listen(roomId,sender)
