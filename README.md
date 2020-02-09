@@ -1,6 +1,7 @@
-# Cisco Webex Teams Bot: Getting Started
+# Cisco Webex Teams Bot Extensions:
 
-A Cisco Webex Teams bot is an automated user within the Webex Teams platform that can be interacted with, enhancing the user experience within an organisation. The following instructions will guide you through the steps required to create and run your own Cisco Webex Teams Bot.
+A Cisco Webex Teams bot is an automated user within the Webex Teams platform that can be interacted with, enhancing the user experience within an organisation. 
+
 
 ## Prerequisites
 
@@ -16,7 +17,7 @@ Click **Documentation** on the top bar and select the **Bots** section on the le
 
 To proceed, click on the **Create a Bot** button and fill up all the required information to describe your new Bot. Finally, scroll down and click on the **Add Bot** button.
 
-Now that your Bot has been created, save the **Access Token** since you will need it later.
+Now that your Bot has been created, save the **Access Token** since you will need it later. (The existing one in code is for hackathon presentation use, will be discarded after 9 Feb. 2020.)
 
 #### Install Git
 
@@ -78,9 +79,12 @@ python3 hello_bot.py
 
 #### 4. Interact with your Bot
 
+##### i. a build-in function: creating polls in a chat space.
 Login to your [Webex Teams](https://teams.webex.com/) account and **Create a Space** by clicking the **+** button. Then, enter your Bot Username (something like **XXXX@webex.bot**) as well as your own email address. The bot has four commands: `create poll`, `add option`, `start poll` and `end poll`. To invoke one of those commands, type `@<bot_name>`, a space, and then the command.
-
-For example, if your bot was named John, to create a poll, you would type `@John create poll` and send that into the space.
+##
+##### ii. Add-on function(what we did!): Adding translation for bot.
+Login to your [Webex Teams](https://teams.webex.com/) account clicking the bot you just created to start a chat window. Then, enter `translation` and hit the enter key.  The bot will give a card in the chat window to obtain the translation source. after finishing the input, click 'OK' button and type a command `start` in the chat window to show the translation result.
+For example, if your bot was named John, to create a poll, you would open a chat with bot 'John' and type `translation`, fill in the card with "I love you" and target language "japanese", click 'OK' and input `start` to get a result "わたしは、あなたを愛しています".
 
 ## Resources
 
@@ -90,3 +94,4 @@ For example, if your bot was named John, to create a poll, you would type `@John
 * [Adaptive Cards Spec](https://adaptivecards.io/explorer/): Schema Explorer for Adaptive Cards and interactive online demo
 * [Cisco Webex Teams App Hub](https://apphub.webex.com/categories): Get some inspiration to develop your own bot from this list of Cisco Webex Teams Bot examples
 * [RapidAPI](https://rapidapi.com/): The world's largest API directory
+* [Googletrans-api](https://py-googletrans.readthedocs.io/en/latest/) An api to translate input messages.

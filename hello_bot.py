@@ -7,6 +7,7 @@ from utils import create_webhook
 from webexteamssdk import WebexTeamsAPI, Webhook
 from googletrans import Translator, LANGUAGES
 
+
 WEBEX_TEAMS_ACCESS_TOKEN = 'MDBjYmQxNmQtMWU5Zi00YTVkLTlmZjMtYjFiMDFhNTJhNmY1YWQ4N2M2NWYtODdh_PF84_4fd62afc-068e-4c49-b7bf-3ef92e2f33f5'
 
 teams_api = None
@@ -123,7 +124,7 @@ def generate_start_translate_card(roomId): # like generate_start_poll_card
                 {
                     "type": "Input.Text",
                     "id": "target_lang",
-                    "placeholder": "(e.g. zh-cn: chinese, ja: japanese, es: spanish, etc.)",
+                    "placeholder": "(e.g. chinese (simplified), ja: japanese, es: spanish, chinese (traditional), etc.)",
                     "maxLength": 500,
                     "isMultiline": True
                 },
@@ -320,21 +321,28 @@ def start_translate(roomId, sender):
     if translateObjs[roomId].author == sender:
         if not translateObjs[roomId].started:
             translateObjs[roomId].started = True
-            source_type = translator.detect(translateObjs[roomId].get_source_content()).lang
+            source_type = LANGUAGES[translator.detect(translateObjs[roomId].get_source_content()).lang]
             send_message_in_room(roomId, "Translating \"" + translateObjs[roomId].get_source_content()
                                  + "\"" + "(" + source_type
-                                 + ") to " + LANGUAGES[translateObjs[roomId].get_targetLang_type()])
+                                 + ") to " + translateObjs[roomId].get_targetLang_type())
         else:
             send_message_in_room(roomId, "Error: translation already started")
     else:
         send_message_in_room(roomId, "Error: only the translation author can start the translator")
+
+
+def get_key(val):
+    for key, value in LANGUAGES.items():
+        if val == value:
+            return key
+    return "language key doesn't exist"
 
 def end_translate(roomId, sender):
     if translateObjs[roomId].author == sender:
         if translateObjs[roomId].started:
             source = translateObjs[roomId].get_source_content()
             target_lang_type = translateObjs[roomId].get_targetLang_type()
-            result = translator.translate(source, target_lang_type, 'auto').text
+            result = translator.translate(source, get_key(target_lang_type), 'auto').text
             teams_api.messages.create(roomId=roomId, text="Card Unsupported", attachments=[generate_translate_result_card(roomId, source, result)])
         else:
             send_message_in_room(roomId, "Translation hasn't been started yet")
@@ -402,3 +410,8 @@ if __name__ == '__main__':
     create_webhook(teams_api, 'messages_webhook', '/messages_webhook', 'messages')
     create_webhook(teams_api, 'attachmentActions_webhook', '/attachmentActions_webhook', 'attachmentActions')
     app.run(host='0.0.0.0', port=5000)
+
+
+
+# mindmeld token: NThjOWViYjMtZTljZC00ZWQ4LWE3YWMtZDI5MjEwMjdlZTZlZTgyZjkxNWYtNjgy_PF84_4fd62afc-068e-4c49-b7bf-3ef92e2f33f5
+# "id": "Y2lzY29zcGFyazovL3VzL1dFQkhPT0svZTY4NjIwYTUtMTRhZS00NWVmLWJlY2EtMWNmZjdiZTlhZDgw"
