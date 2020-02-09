@@ -1,9 +1,22 @@
 # Cisco Webex Teams Bot Extensions:
 
+## The whole story
+
+For this hackathon, we added features to Webex like translation for all languages in the chat window, and we tried to add natrual language processing to support a more conversational bot and possibly a more interactive personal assistant to do more helpful things. (unfortunately not completed as time's up)
+
+But, the value of these two days cannot be ignored. We learned a lot from this Hackathon experience. By attending Cisco's workshop, we learned how to use some of their Webex tools and how to extend the features of Webex Teams.
+As a group, we also learned more about teamwork, how to generate ideas and how to build a useful application from a given environment.
+
+What we have done is successfully adding a translation function for our bot "Bot_Team24",  now it can autodetect and translate a sentence in any language(as long as you input the right language, Klingon is not supported!!), and translate it into any language you want. We tried to add a conversational feature to it but it was not completed, unfortunately.
+
+The main challenge we met was integrating Mindmeld into our bot. It seems that we need to deploy a new server for it but we ran out of time so we had to leave it as it was. but our goal is to complete the conversational bot in Webex Teams using our self-defined dialog library.
+
+
+
+
+## Here's the user instruction: Prerequisites
 A Cisco Webex Teams bot is an automated user within the Webex Teams platform that can be interacted with, enhancing the user experience within an organisation. 
 
-
-## Prerequisites
 
 #### Create a Webex account
 
